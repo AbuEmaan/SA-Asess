@@ -1,0 +1,275 @@
+
+import com.google.common.io.BaseEncoding;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+import javax.script.*;
+
+
+import java.io.*;
+import java.util.List;
+import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.fail;
+
+public class SAAssessmentSteps {
+
+    //private Logger logger = LoggerFactory.getLogger(SAAssessmentSteps.class);
+
+    @Given("^User opens page$")
+    public void userOpenPage() {
+        TestBase.getDriver().get("http://testing.salaamacademy.co.uk/");
+        // logger.info("user is opening main page");
+
+    }
+
+
+    @Then("User startes the process of setting results")
+    public void user_startes_the_process_of_setting_results() throws InterruptedException {
+        WebDriver driver =  TestBase.getDriver();
+
+        driver.manage().window().maximize();
+        driver.findElement(By.id("username")).sendKeys("Wise");
+
+        driver.findElement(By.id("password")).sendKeys("W15eadmin");
+
+        driver.findElement(By.xpath("//input[@value='Login']")).click();
+
+        driver.findElement(By.linkText("ASSESS")).click();
+
+        driver.findElement(By.linkText("Formal Assessment")).click();
+
+        driver.findElement(By.linkText("Manage Internal Assessments")).click();
+
+        // loop through options
+
+        // Create object of the Select class
+        Select se = new Select(driver.findElement(By.xpath("//*[@id='gibbonCourseClassID']")));
+        int classCount = se.getOptions().size();
+        String ClassesAlreadySet = "";
+        for( int r=1; r<= classCount;r++)
+        {
+            se = new Select(driver.findElement(By.xpath("//*[@id='gibbonCourseClassID']")));
+            // Select the option with value "6"
+            WebElement wb = se.getOptions().get(r);
+            String val = wb.getAttribute("value");
+
+            if(!ClassesAlreadySet.contains(val))
+            {
+                //select class from drop down
+                se.selectByIndex(r);
+                Thread.sleep(1000);
+                driver.findElement(By.xpath("//*[@id='gibbonCourseClassID']/following::input")).click();
+
+                // set data for all attributes
+
+                try {
+
+                   int t =  driver.findElements(By.xpath("//img[@title='Enter Data']")).size();
+                   if(t>0){
+
+                       for (int s=0; s<= driver.findElements(By.xpath("//img[@title='Enter Data']")).size();s++)
+                       {
+                           driver.findElements(By.xpath("//img[@title='Enter Data']")).get(s).click();
+
+                           // set the results
+
+                           int studentCount = driver.findElements(By.xpath("//*[text()='Assessment Details']/following::select")).size();
+
+                           for(int h=1;h<=studentCount; h++)
+                           {
+                               int lowerBound =1;
+                               int upperBound = 3;
+                               Select studentAttainment = new Select(driver.findElement(By.xpath("//*[@id='"+h+"-attainmentValue']")));
+                               upperBound = studentAttainment.getOptions().size()-1;
+
+
+                               Random random = new Random();
+                               int randomNumber = random.nextInt(upperBound - lowerBound) + lowerBound;
+
+                               studentAttainment.selectByValue(String.valueOf(randomNumber));
+
+                               driver.findElement(By.id("comment"+h)).sendKeys("mashAllah he/she is doing great!");
+
+                           }
+
+
+                           driver.findElement(By.id("completeDate")).sendKeys("10/02/2021");
+
+                           driver.findElement(By.xpath("//input[@value='Submit']")).click();
+                           driver.findElement(By.linkText("Manage Internal Assessments")).click();
+
+
+                       }
+
+                   }
+
+                }
+                catch(Exception e)
+                {
+
+                }
+                ClassesAlreadySet+=val+",";
+
+
+            }
+
+
+
+        }
+
+
+
+
+    }
+
+
+
+    @Then("^User typing a search query$")
+    public void userTypingSearchQuery() throws InterruptedException, ScriptException {
+
+
+
+
+       WebDriver driver =  TestBase.getDriver();
+
+       driver.manage().window().maximize();
+        driver.findElement(By.id("username")).sendKeys("Wise");
+
+        driver.findElement(By.id("password")).sendKeys("W15eadmin");
+
+        driver.findElement(By.xpath("//input[@value='Login']")).click();
+
+        driver.findElement(By.linkText("ASSESS")).click();
+
+        driver.findElement(By.linkText("Formal Assessment")).click();
+
+        driver.findElement(By.linkText("Manage Internal Assessments")).click();
+
+
+        driver.findElement(By.linkText("Add Multiple Columns")).click();
+
+
+        String file = System.getProperty("user.dir")+ File.separator+ "classes.txt";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            int count =1;
+            while ((line = br.readLine()) != null) {
+
+                line = line.trim();
+                System.out.println("Last Actioned Name: '" + line +"'" );
+
+
+                // Test Score
+                clearAndSelectClass(driver,line);
+                setColumnValues(driver, "Spring Term", "Test Score", "Marks (1-30)", "Marks (1-30)");
+
+                // Attendance Score
+                clearAndSelectClass(driver,line);
+                setColumnValues(driver, "Spring Term", "Attendance Score", "Attendance (1-5)", "Attendance (1-5)");
+
+                // Behaviour Score
+                clearAndSelectClass(driver,line);
+                setColumnValues(driver, "Spring Term", "Behaviour Score", "Behaviour (1-5)", "Behaviour (1-5)");
+
+                // Homework
+                clearAndSelectClass(driver,line);
+                setColumnValues(driver, "Spring Term", "Homework Score", "Homework (1-10)", "Homework (1-10)");
+
+
+
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+
+    public void clearAndSelectClass(WebDriver driver, String line) {
+        //clear the pre selected items
+        Actions builder = new Actions(driver);
+        Action mouseOverHome = builder
+                .moveToElement(driver.findElement(By.id("gibbonCourseClassIDMulti")))
+                .doubleClick()
+                .build();
+        mouseOverHome.perform();
+
+        // add the
+        Actions builder1 = new Actions(driver);
+        Action mouseOverHome1 = builder1
+                .moveToElement(driver.findElement(By.xpath("(//*[text()='Basic Information']/following::option[@value='" + line + "'])[1]")))
+                .doubleClick()
+                .build();
+        mouseOverHome1.perform();
+    }
+
+    public void setColumnValues(WebDriver driver, String Term, String Name, String Desc, String GradeScale) {
+
+        driver.findElement(By.id("name")).sendKeys(Name);
+        driver.findElement(By.id("description")).sendKeys(Desc);
+
+        Select selectType = new Select(driver.findElement(By.id("type")));
+        selectType.selectByVisibleText(Term);
+
+        Select selectScale = new Select(driver.findElement(By.id("gibbonScaleIDAttainment")));
+        selectScale.selectByVisibleText(GradeScale);
+
+        driver.findElement(By.id("effort1")).click();
+        driver.findElement(By.id("uploadedResponse1")).click();
+
+        driver.findElement(By.xpath("//input[@value='Submit']")).click();
+
+
+    }
+
+
+    @When("^User clicks search button$")
+    public void userClicksSearchButton() {
+
+        //logger.info("user clicks search button");
+
+        TestBase
+                .getDriver()
+                .findElement(By.xpath("//*[@id=\"nav-search\"]/form/div[2]/div/input"))
+                .click();
+
+//        delay();
+
+        // fail this step to report screenshot to reportportal
+        fail();
+    }
+
+    private void takeScreenshot(String message) {
+        byte[] screenshot = ((TakesScreenshot) TestBase.getDriver()).getScreenshotAs(OutputType.BYTES);
+
+       // logger.info("RP_MESSAGE#BASE64#{}#{}",
+           //     BaseEncoding.base64().encode(screenshot),
+             //   message);
+    }
+
+    private void delay() {
+
+        try {
+            Thread.sleep(3_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
