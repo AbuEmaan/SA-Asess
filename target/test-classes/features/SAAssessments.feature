@@ -1,26 +1,31 @@
-Feature: start Amazon
+Feature: Setup Assessments
 
-@SetUpColumns
-Scenario: Set Columns
-    Given User opens page
-   When User typing a search query new
-   #Then User clicks search button
-
-@SetResults
-Scenario: Set Data
-        Given User opens page
-        Then User startes the process of setting results
-     #   When User typing a search query
-      #  Then User clicks search button
+#Create the required Columns
+  @SetCols
+ Scenario Outline: Set Columns
+    Given we open the "<ENV>" gibbon site
+    Then we set up columns for the term "<TERM>"
+    Examples:
+    |TERM|ENV|
+    |SUMMER TERM|Test|
 
 
-@updatePassword
-  Scenario: update password
-    Given User opens page
+#Set Comment Result Template for Assessments
+  @SetResults
+  Scenario Outline: Set Data
+    Given we open the "<ENV>" gibbon site
+    Then we set the results comment field for the term "<TERM>"
+    Examples:
+      |TERM|ENV|
+      |SUMMER TERM|Test|
+
+
+#Update all parent passwords
+  @updatePassword
+  Scenario Outline: update password
+    Given we open the "<ENV>" gibbon site
     Then Update passwordsNew
+    Examples:
+      |ENV|
+      |Test|
 
-
-  @testamaxon
-  Scenario: update password
-    Given User opens page amazon
-   # Then Update passwordsNew

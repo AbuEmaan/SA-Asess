@@ -6,15 +6,19 @@ import cucumber.api.java.en.When;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import javax.script.*;
 import com.google.common.io.Files;
+import org.openqa.selenium.JavascriptExecutor;
+
 
 
 import java.io.*;
 import java.util.List;
 import java.util.Random;
 
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +30,23 @@ import static org.junit.Assert.fail;
 
 public class SAAssessmentSteps {
 
+public String termValue= "";
+//    @Given("^User opens page$")
+//    public void userOpenPage() {
+//    TestBase.getDriver().get("http://salaamacademy.co.uk/admin");
+//     //  TestBase.getDriver().get("https://salaamacademy.co.uk/testing/index.php");
+//    }
 
-    @Given("^User opens page$")
-    public void userOpenPage() {
-     // TestBase.getDriver().get("http://salaamacademy.co.uk/admin");
-        TestBase.getDriver().get("https://salaamacademy.co.uk/testing/index.php");
-
+    @Given("we open the {string} gibbon site")
+    public void we_open_the_gibbon_site(String env) {
+        if(env.toLowerCase() == "live")
+            TestBase.getDriver().get("http://salaamacademy.co.uk/admin");
+        else
+            TestBase.getDriver().get("https://salaamacademy.co.uk/testing/index.php");
 
     }
+
+
 
 
 
@@ -189,9 +202,12 @@ public class SAAssessmentSteps {
 
 
 
+    /******************************************************************************************/
+    /****** SET VALUES RESULTS
+     /******************************************************************************************/
 
-    @Then("User startes the process of setting results")
-    public void user_startes_the_process_of_setting_results() throws InterruptedException, IOException {
+    @Then("we set the results comment field for the term {string}")
+    public void we_set_up_results_comment_fields_for_the_term(String term) throws InterruptedException, IOException  {
         WebDriver driver =  TestBase.getDriver();
 
         driver.manage().window().maximize();
@@ -244,6 +260,9 @@ public class SAAssessmentSteps {
                         if (className.startsWith("IS"))
                             commentType = "IS";
 
+                        if (className.contains("89") || className.contains("67"))
+                            commentType = "ISCC";
+
                         if (className.startsWith("QS.H"))
                             commentType = "Hifdh";
 
@@ -261,8 +280,10 @@ public class SAAssessmentSteps {
                         try {
 
                             int t = driver.findElements(By.xpath("//img[@title='Enter Data']")).size();
-                            // do it by term
-                            // int t = driver.findElements(By.xpath("//*[@title='Enter Data']/preceding::span[text()='AUTUMN TERM']")).size();
+
+                            //******************************
+                            // IF doing by term set t =1
+                            t=1;
 
                             if (t > 0) {
 
@@ -276,7 +297,17 @@ public class SAAssessmentSteps {
 
                                     String dataRow = driver.findElement(By.xpath("(//img[@title='Enter Data'])[" + s + "]/../../../td[1]")).getText();
 
-                                    driver.findElement(By.xpath("(//img[@title='Enter Data'])[" + s + "]")).click();
+                                    //****************************
+                                    // Setup for the whole year
+                                    //*****************************
+                                   // driver.findElement(By.xpath("(//img[@title='Enter Data'])[" + s + "]")).click();
+
+
+                                    //*************************
+                                    // Do it ny TERM
+                                    //***************************
+
+                                    driver.findElement(By.xpath("(//span[text()='"+term+"']/following::img[@title='Enter Data'])[1]")).click();
 
 
                                     // set the results
@@ -310,36 +341,46 @@ public class SAAssessmentSteps {
                                         String comment = "";
 
 
+
                                         if (commentType.equals("Hifdh")) {
-                                            comment = "TEST SCORE\r\n==================\r\nX out of 30\r\n\r\n\r\n==================\r\nATTAINMENT GRADE\r\n==================\r\nA*(30-29) \r\nA (28-26)\r\nB (25-23)\r\nC (22-20)\r\nR (19-1)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\nCOMMENT\r\n================== \r\n\r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "TEST SCORE\r\n==================\r\nX out of 30\r\n\r\n\r\n==================\r\nATTAINMENT GRADE\r\n==================\r\nA*(30-29) \r\nA (28-26)\r\nB (25-23)\r\nC (22-20)\r\nR (19-1)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\nCOMMENT\r\n================== \r\n\r\n\r\n\r\n";
 
 
                                         }
 
                                         if (commentType.equals("IS")) {
-                                            comment = "LESSON ENGAGEMENT\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation \r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "LESSON ENGAGEMENT\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation \r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n";
+
+                                        }
+
+
+                                        if (commentType.equals("ISCC")) {
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "=================================\r\nCORE CURRICULUM ASSESSMENT SCORE\r\n=================================\r\nMarks:  Marks Achieved / Full Marks \r\n\r\n\r\n==================\r\nLESSON ENGAGEMENT\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation \r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n";
 
                                         }
 
                                         if (commentType.equals("Quran")) {
-                                            comment = "ATTAINMENT GRADE\r\n==================\r\nA*(30-29) \r\nA (28-26)\r\nB (25-23)\r\nC (22-20)\r\nR (19-1)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nCOMMENT\r\n==================  \r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "ATTAINMENT GRADE\r\n==================\r\nA*(30-29) \r\nA (28-26)\r\nB (25-23)\r\nC (22-20)\r\nR (19-1)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nCOMMENT\r\n==================  \r\n\r\n\r\n";
 
                                         }
 
                                         if (commentType.equals("Kaidah")) {
-                                            comment = "TEST SCORE\r\n==================\r\nX out of 30\r\n\r\n\r\n==================\r\nATTAINMENT GRADE\r\n==================\r\nA*    (30-29) \r\nA     (28-26)\r\nB     (25-23)\r\nC     (22-20)\r\nR     (19-1)\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement \r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "TEST SCORE\r\n==================\r\nX out of 30\r\n\r\n\r\n==================\r\nATTAINMENT GRADE\r\n==================\r\nA*    (30-29) \r\nA     (28-26)\r\nB     (25-23)\r\nC     (22-20)\r\nR     (19-1)\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement \r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n\r\n";
                                         }
 
                                         if (dataRow.contains("EOY Student Status"))
                                             comment = "";
 
 
+                                        driver.findElement(By.id("comment" + h)).clear();
                                         driver.findElement(By.id("comment" + h)).sendKeys(comment);
 
                                     }
 
-
-                                    driver.findElement(By.id("completeDate")).sendKeys("10/12/2021");
+                                    //Don't use this as this will show the assessments as being marked get teachers to update the date when they do the assessments.
+                                 //   driver.findElement(By.id("completeDate")).sendKeys("30/03/2024");
+                                  //  driver.findElement(By.id("completeDate")).sendKeys("31/03/2024");
+                                    // driver.findElement(By.id("completeDate")).sendKeys("30/06/2024");
 
                                     driver.findElement(By.xpath("//input[@value='Submit']")).click();
                                     driver.findElement(By.linkText("Manage Internal Assessments")).click();
@@ -372,79 +413,12 @@ public class SAAssessmentSteps {
 
     }
 
-/*
+    /******************************************************************************************/
+    /****** SET COLUMNS CODE
+    /******************************************************************************************/
 
-    @Then("^User typing a search query$")
-    public void userTypingSearchQuery() throws InterruptedException, ScriptException {
-
-
-
-
-        WebDriver driver =  TestBase.getDriver();
-
-        driver.manage().window().maximize();
-        driver.findElement(By.id("username")).sendKeys("Wise");
-
-        driver.findElement(By.id("password")).sendKeys("W15eadmin");
-
-        driver.findElement(By.xpath("//input[@value='Login']")).click();
-
-        driver.findElement(By.linkText("ASSESS")).click();
-
-        driver.findElement(By.linkText("Formal Assessment")).click();
-
-        driver.findElement(By.linkText("Manage Internal Assessments")).click();
-
-
-        driver.findElement(By.linkText("Add Multiple Columns")).click();
-
-
-        String file = System.getProperty("user.dir")+ File.separator+ "classes.txt";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            int count =1;
-            while ((line = br.readLine()) != null) {
-
-                line = line.trim();
-                System.out.println("Last Actioned Name: '" + line +"'" );
-
-
-                // Test Score
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "Spring Term", "Test Score", "Marks (1-30)", "Marks (1-30)");
-
-                // Attendance Score
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "Spring Term", "Attendance Score", "Attendance (1-5)", "Attendance (1-5)");
-
-                // Behaviour Score
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "Spring Term", "Behaviour Score", "Behaviour (1-5)", "Behaviour (1-5)");
-
-                // Homework
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "Spring Term", "Homework Score", "Homework (1-10)", "Homework (1-10)");
-
-
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-    }
-*/
-
-    @Then("^User typing a search query new$")
-    public void userTypingSearchQueryNew() throws InterruptedException, ScriptException {
-
-
-
+    @Then("we set up columns for the term {string}")
+    public void we_set_up_columns_for_the_term(String term) {
 
         WebDriver driver =  TestBase.getDriver();
 
@@ -500,26 +474,10 @@ public class SAAssessmentSteps {
                     gradeScale="Year 1 Attainment";
 
 
-
-                // Set Autumn
+                // Set by term
                 clearAndSelectClass(driver,line);
-               setColumnValues(driver, "AUTUMN TERM", gradeScale, gradeScale, gradeScale);
+                setColumnValues(driver, term, gradeScale, gradeScale, gradeScale);
 
-               /*
-                // Set Spring
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "SPRING TERM", gradeScale, gradeScale, gradeScale);
-
-                // Set Spring Summer
-                clearAndSelectClass(driver,line);
-                setColumnValues(driver, "SUMMER TERM", gradeScale, gradeScale, gradeScale);
-
-                // Set Final Status
-                if(!classSelected.startsWith("IS")) {
-                    clearAndSelectClass(driver, line);
-                    setColumnValues(driver, "SUMMER TERM", "EOY Student Status", "EOY Student Status", "EOY Student Status");
-                }
-                */
 
             }
         } catch (FileNotFoundException e) {
@@ -552,6 +510,9 @@ public class SAAssessmentSteps {
         mouseOverHome1.perform();
     }
 
+
+
+
     public void setColumnValues(WebDriver driver, String Term, String Name, String Desc, String GradeScale) {
 
         driver.findElement(By.id("name")).sendKeys(Name);
@@ -561,11 +522,20 @@ public class SAAssessmentSteps {
         selectType.selectByVisibleText(Term);
 
         Select selectScale = new Select(driver.findElement(By.id("gibbonScaleIDAttainment")));
+        WebDriverWait wait = new WebDriverWait(driver, 30);
 
-        if(GradeScale.equals("IS Attainment"))
+        if(GradeScale.equals("IS Attainment")) {
+           WebElement element =  driver.findElement(By.xpath("//input[@id='attainment1' and @value='N']"));
+         //   driver.("arguments[0].scrollIntoView(true);", element);
+
+            ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView(true);", element);
+
+
             driver.findElement(By.xpath("//input[@id='attainment1' and @value='N']")).click();
-        else
+        }
+        else {
             selectScale.selectByVisibleText(GradeScale);
+        }
 
 
         driver.findElement(By.id("effort1")).click();
