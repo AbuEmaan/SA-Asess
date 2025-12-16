@@ -355,12 +355,16 @@ public String termValue= "";
 
 
                                         if (commentType.equals("ISCC")) {
-                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "=================================\r\nCORE CURRICULUM ASSESSMENT SCORE\r\n=================================\r\nMarks:  Marks Achieved / Full Marks \r\n\r\n\r\n==================\r\nLESSON ENGAGEMENT\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation \r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "=================================\r\nCORE CURRICULUM ASSESSMENT SCORE\r\n=================================\r\nMarks:  Marks Achieved / Max Marks \r\n\r\n\r\n==================\r\nLESSON ENGAGEMENT\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation \r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n";
 
                                         }
 
                                         if (commentType.equals("Quran")) {
-                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "ATTAINMENT GRADE\r\n==================\r\nA*(30-29) \r\nA (28-26)\r\nB (25-23)\r\nC (22-20)\r\nR (19-1)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nCOMMENT\r\n==================  \r\n\r\n\r\n";
+                                            comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "=================================\r\nTAJWEED MARK\r\n=================================\r\nMarks:  Marks Achieved / Max Marks \r\n\r\n=================================\n" +
+                                                    "RECITATION MARK\r\n" +
+                                                    "=================================\r\n" +
+                                                    "Marks:  Marks Achieved / Max Marks \r\n\r\n" +
+                                                    "==================\n" + "ATTAINMENT GRADE\r\n==================\r\nA*(91-100%) \r\nA (81-90%)\r\nB (71-80%)\r\nC (61-70%)\r\nR (1-60%)\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n==================\r\nCOMMENT\r\n==================  \r\n\r\n\r\n";
 
                                         }
 
@@ -418,7 +422,7 @@ public String termValue= "";
     /******************************************************************************************/
 
     @Then("we set up columns for the term {string}")
-    public void we_set_up_columns_for_the_term(String term) {
+    public void we_set_up_columns_for_the_term(String term) throws InterruptedException {
 
         WebDriver driver =  TestBase.getDriver();
 
@@ -449,7 +453,7 @@ public String termValue= "";
                 line = line.trim();
                 System.out.println("Last Actioned Name: '" + line +"'" );
 
-
+                Thread.sleep(2000);
 
                String classSelected  = driver.findElement(By.xpath("(//*[text()='Basic Information']/following::option[@value='" + line + "'])[1]")).getText();
                String gradeScale="";
@@ -462,7 +466,7 @@ public String termValue= "";
                    gradeScale="Hifdh Attainment";
 
                if(classSelected.startsWith("QS.Q"))
-                   gradeScale="Quran Marks (1-30)";
+                   gradeScale="Quran Marks";
 
                if(classSelected.startsWith("QS.K") || classSelected.startsWith("KS.K")   )
                     gradeScale="Kaidah Attainment";
