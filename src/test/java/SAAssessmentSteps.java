@@ -295,7 +295,7 @@ public String termValue= "";
                                     Thread.sleep(1000);
 
 
-                                    String dataRow = driver.findElement(By.xpath("(//img[@title='Enter Data'])[" + s + "]/../../../td[1]")).getText();
+                                   // String dataRow = driver.findElement(By.xpath("(//img[@title='Enter Data'])[" + s + "]/../../../td[1]")).getText();
 
                                     //****************************
                                     // Setup for the whole year
@@ -372,8 +372,8 @@ public String termValue= "";
                                             comment =  "******************\r\n<b>"+term+"</b>\r\n******************\r\n\r\n" + "TEST SCORE\r\n==================\r\nX out of 30\r\n\r\n\r\n==================\r\nATTAINMENT GRADE\r\n==================\r\nA*    (30-29) \r\nA     (28-26)\r\nB     (25-23)\r\nC     (22-20)\r\nR     (19-1)\r\n\r\n\r\n==================\r\nATTENDANCE\r\n==================\r\nMeeting Expectation\r\nBelow Expectation\r\n\r\n==================\r\nBEHAVIOUR/ATTITUDE\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement\r\n\r\n\r\n==================\r\nHOMEWORK\r\n==================\r\nOutstanding\r\nExcellent\r\nGood\r\nSatisfactory\r\nNeeds Improvement \r\n\r\n==================\r\nCOMMENT\r\n==================\r\n\r\n\r\n\r\n";
                                         }
 
-                                        if (dataRow.contains("EOY Student Status"))
-                                            comment = "";
+                                      //  if (dataRow.contains("EOY Student Status"))
+                                     //       comment = "";
 
 
                                         driver.findElement(By.id("comment" + h)).clear();
